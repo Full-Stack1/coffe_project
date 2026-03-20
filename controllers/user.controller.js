@@ -1,5 +1,5 @@
 const usermodel=require ("../models/UserSchema");
-const Item= require("../models/itemSchema");
+//const Item= require("../models/itemSchema");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken")
 
@@ -7,51 +7,37 @@ const jwt = require("jsonwebtoken")
 const generatetoken=(usercreate)=>
 {
  const payload ={
-    id : usermodel._id,
-    role : usermodel.role
+    id : usercreate._id,
+    role : usercreate.role
  }
-   return jwt.sign(payload,process.env.JWT_SECRET,{expiresIn : "1h"}) 
+   return jwt.sign(payload,process.env.JWT_SECRET,{expiresIn : "14w"}) 
 }
 
 //register
 const register=async(req,res)=>
 { 
    try{
-    const {Email,PassWord,Name,Age} = req.body;
-    if(!Name)
-    return res.status(400).json({message: "Pleas Enter Your Name"})
-   else  if(!Email)
-    return res.status(400).json({message: "Pleas Enter Your Password"})
- else if(!PassWord)
-    return res.status(400).json({message: "Pleas Enter Your Email"})
- else if(!Age)
-    return res.status(400).json({message: "Pleas Enter Your Age"})
-  
+    const {Name,Email,PassWord,phone} = req.body;
+    
 //check if user is exist based on email 
  const existuser= await usermodel.findOne({Email})
  if(existuser)
-    return res.status(409).json({message: "The user alrady register from this email "})
+    return res.status(404).json({message: "The user alrady register from this email "})
 //hashing password
 const salt= 10; 
 const hashing = await bcrypt.hash(PassWord,salt);
 console.log("hashing",hashing)
 //create user 
-const usercreate= await usermodel.create({
-    Email,
-      PassWord:hashing,
-       Name,
-       Age,
-       role:"user" 
-})
+const usercreate =  await usermodel.create({Name,Email,PassWord : hashing,phone})  //add await becuse the add is  take long time to created
+
 if(!usercreate)
     return res.status(404).json({message: "user not created"})
 //هون حطينا توكسن يلي عملنا مشان ينبعث مع اليوزر 
 const token= generatetoken(usercreate)
 
-res.status(200).json({
+res.status(201).json({
        message:"New User Was add" ,
-       data: usercreate,
-       token: token
+       data: { id: usercreate._id, Name, Email, phone },       token: token
     })
 }catch(err)
 {
@@ -65,18 +51,13 @@ const Login= async (req,res)=>
 {
     try
     {
-       const {Email,PassWord}=req.body;
-     if(!Email)
-    return res.status(400).json({message: "Pleas Enter Your Email "})
- else if(!PassWord)
-    return res.status(400).json({message: "Pleas Enter Your Password "})
-
+    const {Email,PassWord}=req.body;
     const user= await usermodel.findOne({Email})
     if(!user)
         return res.status(404).json({message:"This  Email Not Have Account "})
     const ismatch= await bcrypt.compare(PassWord,user.PassWord);
     if(!ismatch)
-        return res.status(404).json({message: "password not correct"})
+        return res.status(401).json({message: "password not correct"})
     const token= generatetoken(user);
     res.status(200).json({
        message:"Login sucessfully" ,
@@ -91,9 +72,81 @@ const Login= async (req,res)=>
     }
 
 }
+//get info profile
+const getinfoprofile = async (req,res)=>
+{
+   try
+   { 
+      const{userId}= req.params;
+    const userprofile= await usermodel.findById(userId);
+    res.status(200).json({message: "The Info Profile is : ",data : userprofile});
+
+   }catch(error)
+   {
+      res.status(500).json({message: " Server Error",error:error})
+   }
+
+}
+
+
+//update profile 
+const updateprofile=async(req,res)=>
+{
+     try
+    {
+
+    const {Name,Email,phone}= req.body;
+    const { userId } = req.params;
+    if (!userId)
+  return res.status(400).json({ message: "User ID must be provided" });
+  const editepofile= await usermodel.findOneAndUpdate 
+  (
+     {_id: userId},
+     {Name,Email,phone},
+     {new : true}
+  )
+  res.status(200).json({message: "The profile information is updated ",data:editepofile })
+}catch(error)
+     {
+       return res.status(500).json({message: "Server Error ",error:error})
+     }
+
+}
+const newuser = async (req, res) => {
+  try {
+    const { Name, Email, PassWord, phone, role } = req.body;
+
+    // هاش لكلمة المرور
+    const salt = await bcrypt.genSalt(10);
+    const hashing = await bcrypt.hash(PassWord, salt);
+
+    // إنشاء المستخدم مباشرة
+    const newusers = await usermodel.create({
+      Name,
+      Email,
+      PassWord: hashing,
+      phone,
+      role
+    });
+
+    res.status(201).json({
+      message: "New User was added",
+      data: newusers
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      message: "Failed: Another user has same Email or server error",
+      err: err.message
+    });
+  }
+};
 
 
 
+
+
+/*
 //usermodel.findone({name})   //هي لما ابحث عن حقل معين بستخدمها 
 const getAllusers= (req,res)=>
 {   //populate("items") to view the detail the item user
@@ -105,90 +158,18 @@ const getAllusers= (req,res)=>
     res.send(err)
 })
 }
-//creat user
- const newuser=(req,res)=>
-{
-    const{Email,PassWord,Name,Age}= req.body;
-    if(!Email )
-    {
-        return res.status(404).json({
-            message:"not foud the email "
-        })
-    }
-    //first way to create new user
-    const user= new usermodel
-    ({
-         Email,
-       PassWord,
-       Name,
-       Age,
-    })
-    user.save().then(()=>
-    res.status(201).json({
-       message:"New User Was add" 
-    })).catch((err)=>{
-        res.status(500).json({message:"Failed Another User has same Email"})
-    })
-}
+//create new user 
+c
 
 
-/*--------------------item the user ------------------------------------------------------------- */
-//add item to the user
-/*const addNewItemtouser= async (req,res)=>
-{ 
-    try
-    {   
-       const{userid}=req.params;
-      // console.log("user id is ",userid);
-       const {name,image,category} =req.body;
-       //Validation  
-       if(!userid)
-       return res.status(400).json({message:"user id is required"})
-        if(!name)
-    return res.status(400).json({message: "Pleas Enter Your Name"})
-      else if (!category)
-    return res.status(400).json({message:"Pleas checking the Filed of category"})
-     //console.log(Item); 
-      const newitem= await Item.create
-     ({
-         name,
-         image,
-         category,
-     })
-   //another way to add item to the user 
-   const user= await usermodel.findByIdAndUpdate(
-    userid,
-    {$push : {items : newitem._id}}
-)
-     //first way to add item to user
-    /* const user= await usermodel.findById(userid)
-    
+*/
 
-     if(!user){
-        return res.status(404).json({message :"not found user"})
-     }
-     user.items.push(newitem._id);
-     await user.save();
-     res.status(201).json
-     ({
-       message:"New item Was add",
-    data: user 
-})
-    }catch(err)
-    { console.log(err)
-      res.status(500).json({message:"Server Error"})
-
-    }  
-}*/
-
-
-
-//to call this fun any file
 module.exports= 
 {
-   getAllusers,
-   newuser,
-  // addNewItemtouser,
    register,
    Login,
+   getinfoprofile,
+   updateprofile,
+   newuser,
+
 }
