@@ -96,19 +96,19 @@ const updateprofile=async(req,res)=>
     {
 
     const {Name,Email,phone}= req.body;
-    const { userId } = req.params;
-    if (!userId)
+    const { userid } = req.params;
+    if (!userid)
   return res.status(400).json({ message: "User ID must be provided" });
   const editepofile= await usermodel.findOneAndUpdate 
   (
-     {_id: userId},
+     {_id: userid},
      {Name,Email,phone},
      {new : true}
   )
   res.status(200).json({message: "The profile information is updated ",data:editepofile })
 }catch(error)
      {
-       return res.status(500).json({message: "Server Error ",error:error})
+       return res.status(500).json({message: "Server Error ",error:error.message})
      }
 
 }

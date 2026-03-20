@@ -1,3 +1,4 @@
+const usermodel=require("../models/UserSchema");
 const validateFiledcreateuser=(req,res,next)=>
 {   
      const { Name, Email, PassWord, phone,role } = req.body;

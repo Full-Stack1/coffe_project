@@ -1,6 +1,6 @@
 const { default: mongoose } = require("mongoose");
 
-mongoose.connect(process.env.URL_DB).then(()=>{
+mongoose.connect("mongodb://127.0.0.1:27017/coffee_project").then(()=>{
     console.log("Ready To Use Data base")
 }).catch((err)=>
 {
