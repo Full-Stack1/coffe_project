@@ -4,8 +4,8 @@ const {validateRegister,validateLogIn,Validateupdateprofile,validateinfoprofile,
 const usersRouter= express.Router();
 usersRouter.post("/register",validateRegister,register);
 usersRouter.post("/login",validateLogIn,Login);
-usersRouter.post("/upadate",Validateupdateprofile,updateprofile);
-usersRouter.get("/infoProfile",validateinfoprofile,getinfoprofile);
+usersRouter.post("//update/:userid",Validateupdateprofile,updateprofile);
+usersRouter.get("/:userId",validateinfoprofile,getinfoprofile);
 usersRouter.post("/creates",validateFiledcreateuser,newuser);
 
 module.exports=usersRouter;
