@@ -1,8 +1,10 @@
-const { Mongoose } = require("mongoose");
-const CategorySchema =new mongoose.Schema({
-name:{type : String,required: true},
+const { default: mongoose } = require("mongoose");
+const CategorySchema =new mongoose.Schema
+({
+name:{type : String,required: true, unique:true},
 image: { type: String },
- itemsCount: { type: Number, default: 0 },
+ isActive: { type: Boolean, default: true },
+ //itemsCount: { type: Number, default: 0 },
 },
 {
      timestamps : true  
