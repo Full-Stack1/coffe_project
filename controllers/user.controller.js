@@ -99,7 +99,7 @@ const updateprofile=async(req,res)=>
     const { userid } = req.params;
     if (!userid)
   return res.status(400).json({ message: "User ID must be provided" });
-  const editepofile= await usermodel.findOneAndUpdate 
+  const editepofile= await usermodel.findByIdAndUpdate 
   (
      {_id: userid},
      {Name,Email,phone},
@@ -128,10 +128,9 @@ const newuser = async (req, res) => {
       phone,
       role
     });
-
     res.status(201).json({
       message: "New User was added",
-      data: newusers
+      data: newusers,
     });
 
   } catch (err) {

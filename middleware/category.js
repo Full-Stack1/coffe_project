@@ -1,0 +1,57 @@
+
+const usermodel=require ("../models/UserSchema");
+const jwt = require("jsonwebtoken");
+
+
+const authMiddleware = (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization;
+    if (!authHeader)
+      return res.status(401).json({ message: "No token provided" });
+
+    const token = authHeader.split(" ")[1];
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    req.user = decoded; // هنا بيانات id + role صارت متوفرة لأي middleware لاحق
+    next();
+  } catch (err) {
+    res.status(403).json({ message: "Invalid token" });
+  }
+}
+const validateadminrole = (req, res, next) => {
+  if (req.user.role !== "admin")
+    return res.status(403).json({ message: "Access denied" });
+
+  next();
+};
+const validate_addnew_category = (req,res,next)=>
+{
+   const{name,image}=req.body;
+    if(!name)
+        return res.status(400).json({message: "Pleas Enter Your Name"})
+       else  if(!image)
+        return res.status(400).json({message: "Pleas Enter Image URL "})
+     
+      next();
+
+}
+const validateupdatecategory= (req,res,next)=>
+{
+    const{name,image,isActive}=req.body;
+    if(!name)
+        return res.status(400).json({message: "Pleas Enter Your Name"})
+       else  if(!image)
+        return res.status(400).json({message: "Pleas Enter Image URL "})
+     else if(typeof isActive !== "boolean")
+        return res.status(400).json({message: "Pleas Enter Status Of Category "})
+     
+      next();
+}
+module.exports= 
+{
+    authMiddleware,
+    validateadminrole,
+    validate_addnew_category,
+    validateupdatecategory,
+
+}
