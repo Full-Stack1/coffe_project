@@ -1,7 +1,7 @@
 const express = require("express");
 require("dotenv").config();
 const usersRouter = require("./routes/user");
-const itemsRouters = require("./routes/items");
+const productsRouters = require("./routes/product");
 const categoryRoutes= require("./routes/category");
 require("./models/db");
 const app = express();
@@ -13,13 +13,8 @@ app.get("/health",(req,res)=>{
 })*/
 //console.log(process.env.test);
 app.use("/users",usersRouter);
-app.use("/items",itemsRouters);
+app.use("/products",productsRouters);
 app.use("/category",categoryRoutes);
-
-
-
-
-
 app.listen(process.env.PORT, () => {
 console.log(`Server running at http://localhost:${process.env.PORT}`);
 });

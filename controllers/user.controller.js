@@ -1,3 +1,4 @@
+const { json } = require("express");
 const usermodel=require ("../models/UserSchema");
 //const Item= require("../models/itemSchema");
 const bcrypt = require("bcrypt");
@@ -10,7 +11,7 @@ const generatetoken=(usercreate)=>
     id : usercreate._id,
     role : usercreate.role
  }
-   return jwt.sign(payload,process.env.JWT_SECRET,{expiresIn : "14w"}) 
+   return jwt.sign(payload,process.env.JWT_SECRET,{expiresIn : "1y"}) 
 }
 
 //register
