@@ -3,7 +3,8 @@ const categorymodel=require("../models/CategorySchema");
 const getallcategory= async (req,res)=>
 {  
     try
-   { const Category= await categorymodel.find({isActive : true});
+   { 
+    const Category= await categorymodel.find({isActive : true});
     res.status(201).json
     ({
             message: "The Category is : ",

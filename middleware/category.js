@@ -9,6 +9,7 @@ const validate_addnew_category = (req,res,next)=>
         return res.status(400).json({message: "Pleas Enter Image URL "})
      
       next();
+      
 
 }
 const validateupdatecategory= (req,res,next)=>
