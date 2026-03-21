@@ -112,12 +112,13 @@ const updateprofile=async(req,res)=>
      }
 
 }
-const newuser = async (req, res) => {
+//add new user by admin 
+const addnewuser = async (req, res) => {
   try {
     const { Name, Email, PassWord, phone, role } = req.body;
 
     // هاش لكلمة المرور
-    const salt = await bcrypt.genSalt(10);
+    const salt = 10;
     const hashing = await bcrypt.hash(PassWord, salt);
 
     // إنشاء المستخدم مباشرة
@@ -169,6 +170,6 @@ module.exports=
    Login,
    getinfoprofile,
    updateprofile,
-   newuser,
+   addnewuser,
 
 }
