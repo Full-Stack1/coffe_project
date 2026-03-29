@@ -3,7 +3,7 @@ const ProductSchema= new mongoose.Schema
 ({ 
      name : {type: String , required: true, unique:true},
      image :{type : String},
-    price: { type: Number, required: true },
+    price: { type: Number },
     sizes: [{
         size:{type: String,enum:["Small","Medium","Large"]},
         price: { type: Number }

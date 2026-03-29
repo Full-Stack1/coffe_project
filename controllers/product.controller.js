@@ -43,26 +43,26 @@ const createNewProduct= async (req,res)=>
 { 
  try
 {
-  const {name,image,price,sizes,description,category } =req.body;  
-  
+  const {name,image,price,sizes,description,category } =req.body; 
+  console.log(req.body); 
 const Exproduct = await productmodel.findOne({name});
 if(Exproduct)
 {
     return res.status(400).json({
      
-        message: "The Name is alrady take "
+        message: "The Product is alrady was added "
     })
 }
 
 const newproduct=  await productmodel.create({name,image,price,sizes,description,category })  
 if(!newproduct)
     return res.status(404).json({message : "Failed Add New Product"})
-res.status(201).json({
+   return res.status(201).json({
     message: " The New product is Created",
     data: newproduct
 })
 }catch(err)
-{
+{  console.log(err);
   res.status(500).json({message: "Server Error",err: err.message})    
 } 
 }
@@ -123,7 +123,7 @@ const getfiltersnameproduct= async(req,res)=>{
     if(!name)
         return res.status(400).json({message:"Name Is Require"})
     
-    const product=await productmodel.find({name})
+    const product=await productmodel.findOne({name}).populate("category", "name");
    if(!product)
     return res.status(404).json({message: "Not Found Product Has This Name"})
    res.status(200).json({
