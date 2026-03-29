@@ -1,4 +1,4 @@
-const product= require("../models/ProductSchema");
+const productmodel= require("../models/ProductSchema");
 const categorymodel=require("../models/CategorySchema");
 const ValidateAllFiledSchema=(req,res,next)=>
 {
@@ -13,6 +13,7 @@ if(!description)
     return res.status(400).json({message: "Please Enter Description Of Product "});
 if(!category)
     return res.status(400).json({message: "Please Enter category Of Product "});
+next();
 
 }
 //check category of product in data base
@@ -20,17 +21,19 @@ const checkproduct=async (req,res,next)=>
 {
    try
    {
-    const{categoryid}=req.body;
-   if(!categoryid)
+    const{category}=req.body;
+   if(!category)
     return res.status(400).json({message: "The Categoray ID Is Require"})
-const Excategory=await categorymodel.findById(categoryid);
+const Excategory=await categorymodel.findById(category);
 if(!Excategory)
-    return res.status(404).json({message: "Not Foun Category"})
-next();
+    return res.status(404).json({message: "Not Found Category"});
+  next();
 }catch(err)
 {
     return res.status(500).json({message: "Server Error",err: err.message})
+
 }
+
 }
 
 
