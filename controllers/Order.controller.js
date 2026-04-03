@@ -13,29 +13,19 @@ const createorder = async (req, res) => {
         message: "Products are required",
       });
     }
+ let totalAmount = 0;
+for (let item of products) {
+  const { product, size, quantity } = item;
+  const foundProduct = await productmodel.findById(product);
 
-    // ✅ loop on products
-    for (let item of products) {
-      const { product, quantity } = item;
+  // إيجاد السعر حسب الحجم
+  const selectedSize = foundProduct.sizes.find(s => s.size === size);
+  if (!selectedSize) {
+    return res.status(400).json({ message: `Size ${size} not available` });
+  }
 
-      if (!product || !quantity || quantity <= 0) {
-        return res.status(400).json({
-          message: "Invalid product or quantity",
-        });
-      }
-
-      const foundProduct = await productmodel.findById(product);
-
-      if (!foundProduct) {
-        return res.status(404).json({
-          message: "Product not found",
-        });
-      }
-         let totalAmount=0;
-      // ✅ حساب السعر
-      totalAmount += foundProduct.price * quantity;
-    }
-
+  totalAmount += selectedSize.price * quantity;
+}
     // ✅ create order
     const neworder = await ordermodel.create({
       user: req.user.id,
@@ -61,10 +51,10 @@ const listorder= async(req,res)=>
 { 
     try
     {   
-        const preorders= await ordermodel.find({user: req.user.id,});
+        const preorders= await ordermodel.find({user: req.user.id,}).populate("products.product", "name price");
         res.status(200).json({
             message: "Return All Products Was Successfully ",
-            data: preproducts
+            data: preorders
         }) 
 
     }catch(error)
