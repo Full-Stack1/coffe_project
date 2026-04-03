@@ -73,7 +73,7 @@ const hidecategory= async(req,res)=>
 {
    try
       {
-        const Categoryid = req.params.Categoryid;  
+        const {Categoryid} = req.params;  
          if(!Categoryid)
           return res.status(400).json({message:"The ID is Required"})
         await categorymodel.findByIdAndUpdate(
@@ -85,7 +85,8 @@ const hidecategory= async(req,res)=>
   
       }catch(err){
           res.status(500).json({
-              message:"Server Error"
+              message:"Server Error",
+              err: err.message
           })
       }
      
